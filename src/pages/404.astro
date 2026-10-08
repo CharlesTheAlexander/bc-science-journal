@@ -1,0 +1,8 @@
+---
+import { base } from '../lib';
+import Base from '../layouts/Base.astro';
+---
+<Base title="Page not found" description="That page doesn’t exist." noindex>
+  <h1 class="display text-t2">That page doesn’t exist.</h1>
+  <p class="mt-4 text-xl max-w-[50ch]">The link may be old, or the article may have moved. Try <a class="link-ink" href={`${base}/search`}>search</a>, or start from the <a class="link-ink" href={`${base}/`}>current issue</a>.</p>
+</Base>

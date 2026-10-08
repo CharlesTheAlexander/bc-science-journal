@@ -1,0 +1,25 @@
+---
+import { Image } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import SectionHead from '../../components/SectionHead.astro';
+import { fmtDate, liveIssues, base } from '../../lib';
+const issues = await liveIssues();
+---
+<Base title="Issues" description="Every issue of The Berkeley Carroll Science Journal.">
+  <SectionHead title="Issues" />
+  {issues.length === 0 ? (
+    <p class="text-xl max-w-[50ch]">The first issue publishes in January 2027. Until then, <a class="link-ink" href={`${base}/submit`}>write for it</a>.</p>
+  ) : (
+    <ul class="grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
+      {issues.map((i) => (
+        <li>
+          <a href={`${base}/issues/${i.id}`} class="block group">
+            <Image src={i.data.coverImage} alt="" width={800} height={450} class="w-full aspect-[16/9] object-cover" loading="lazy" />
+            <h2 class="display mt-3 text-t4 group-hover:text-accent">{i.data.title}</h2>
+            <p class="meta">{i.data.season}, {fmtDate(i.data.publishDate)}</p>
+          </a>
+        </li>
+      ))}
+    </ul>
+  )}
+</Base>

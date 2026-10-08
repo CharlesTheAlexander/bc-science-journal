@@ -1,0 +1,54 @@
+---
+import Base from '../layouts/Base.astro';
+import SectionHead from '../components/SectionHead.astro';
+// ponytail: replace with the real Google Form link once it exists
+const FORM_URL = 'https://forms.gle/REPLACE-ME';
+const deadlines = [
+  ['October 9, 2026', 'Pitches due, one paragraph per piece'],
+  ['October 30, 2026', 'First drafts due'],
+  ['December 11, 2026', 'Final drafts locked'],
+  ['January 22, 2027', 'Issue 1 publishes'],
+];
+---
+<Base title="Write for the journal" description="Submission guidelines, deadlines, and the pitch form for The Berkeley Carroll Science Journal.">
+  <SectionHead title="Write for the journal" sub="Anyone at Berkeley Carroll can write. Start with a one-paragraph pitch." />
+  <div class="grid gap-10 lg:grid-cols-[1fr_18rem] lg:gap-16 items-start">
+    <div class="prose">
+      <p><a href={FORM_URL} class="font-sans text-base font-medium">Send a pitch through the form</a>. Tell us what you’d write about and what kind of piece it is. A founder replies within a week.</p>
+
+      <h2>Deadlines for Issue 1</h2>
+      <table>
+        <tbody>
+          {deadlines.map(([d, what]) => <tr><td class="whitespace-nowrap">{d}</td><td>{what}</td></tr>)}
+        </tbody>
+      </table>
+
+      <h2>Length</h2>
+      <p>Articles run 600 to 1,500 words. Research write-ups can go to 2,500. Problem sets and alumni interviews have their own formats; ask.</p>
+
+      <h2>Sources</h2>
+      <p>Anything factual gets a link or a citation. Personal research says what was done, what was found, and what is uncertain. Sources are listed at the end of every published piece.</p>
+
+      <h2>AI</h2>
+      <p>You may use AI tools to brainstorm and to check grammar. The writing and the reasoning must be your own, and pieces are read with that in mind. If you’re unsure whether something crosses the line, ask an editor before you submit.</p>
+
+      <h2>Rights</h2>
+      <p>You keep the copyright to your work. You grant the journal the right to publish it online and in print. You can link to or republish your piece anywhere.</p>
+
+      <h2>What happens after you pitch</h2>
+      <ol>
+        <li>A founder accepts the pitch and assigns you an editor.</li>
+        <li>You write a first draft in a shared document.</li>
+        <li>One edit round with comments, usually two.</li>
+        <li>The section editor signs off, then a copyedit and the faculty advisor’s read.</li>
+        <li>Your piece goes up on the site with your name on it and a page of your own.</li>
+      </ol>
+    </div>
+    <aside class="font-sans text-sm border-t border-accent pt-3 lg:sticky lg:top-8">
+      <p class="font-medium">Two pieces, one title</p>
+      <p class="text-muted mt-1">Publish two pieces and you’re listed as an Associate Editor on the masthead.</p>
+      <p class="mt-4"><a class="link-ink" href={FORM_URL}>Pitch form</a></p>
+      <p class="mt-1"><a class="link-ink" href="mailto:sciencejournal@berkeleycarroll.org">Email the editors</a></p>
+    </aside>
+  </div>
+</Base>

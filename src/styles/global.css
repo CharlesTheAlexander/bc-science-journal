@@ -1,0 +1,106 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@theme {
+  --font-serif: var(--font-newsreader);
+  --font-sans: var(--font-public);
+  --color-paper: #f9f6f3;
+  --color-ink: #211f1d;
+  --color-muted: #625a5c;
+  --color-rule: #dcd4cf;
+  /* Palette read from berkeleycarroll.org main.css: maroon, ink, cream */
+  --color-accent: #501031;
+  --color-accent-soft: #efe3e7;
+  /* Type scale, ratio about 1.25, fluid between phone and laptop */
+  --text-t1: clamp(2.25rem, 1.4rem + 3.6vw, 4rem);
+  --text-t1--line-height: 1.02;
+  --text-t2: clamp(2rem, 1.3rem + 2.6vw, 3.25rem);
+  --text-t2--line-height: 1.05;
+  --text-t3: clamp(1.5rem, 1.2rem + 1.4vw, 2.25rem);
+  --text-t3--line-height: 1.1;
+  --text-t4: clamp(1.35rem, 1.15rem + 0.9vw, 1.7rem);
+  --text-t4--line-height: 1.15;
+  --text-lede: clamp(1.125rem, 1.05rem + 0.5vw, 1.375rem);
+  --text-lede--line-height: 1.4;
+}
+
+@layer base {
+  html { background: var(--color-paper); color: var(--color-ink); font-family: var(--font-serif); font-optical-sizing: auto; -webkit-font-smoothing: antialiased; }
+  ::selection { background: var(--color-accent-soft); }
+  :focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; animation: none !important; scroll-behavior: auto !important; } }
+}
+
+@utility display {
+  font-family: var(--font-serif);
+  font-variation-settings: "opsz" 72;
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  line-height: 1.05;
+  text-wrap: balance;
+}
+
+@utility meta {
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--color-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+@utility link-ink {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: var(--color-rule);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+  transition: text-decoration-color 120ms ease;
+  &:hover { text-decoration-color: var(--color-accent); }
+}
+
+/* Article body */
+.prose {
+  --tw-prose-body: var(--color-ink);
+  --tw-prose-headings: var(--color-ink);
+  --tw-prose-links: var(--color-accent);
+  --tw-prose-quotes: var(--color-accent);
+  --tw-prose-quote-borders: var(--color-accent);
+  --tw-prose-captions: var(--color-muted);
+  --tw-prose-bullets: var(--color-muted);
+  --tw-prose-hr: var(--color-rule);
+  --tw-prose-th-borders: var(--color-rule);
+  --tw-prose-td-borders: var(--color-rule);
+  font-size: 1.0625rem;
+  line-height: 1.65;
+  max-width: 66ch;
+  font-variation-settings: "opsz" 16;
+}
+@media (min-width: 40rem) { .prose { font-size: 1.125rem; line-height: 1.7; } }
+@media (max-width: 40rem) { .prose p { hyphens: auto; -webkit-hyphens: auto; } }
+.prose p { margin-top: 0; margin-bottom: 1.35em; }
+.prose h2, .prose h3 { font-weight: 600; font-variation-settings: "opsz" 36; letter-spacing: -0.01em; text-wrap: balance; }
+.prose h2 { font-size: 1.5em; margin-top: 2em; margin-bottom: 0.6em; }
+.prose h3 { font-size: 1.2em; margin-top: 1.6em; margin-bottom: 0.4em; }
+.prose a { text-decoration-thickness: 1px; text-underline-offset: 0.2em; font-weight: inherit; }
+.prose blockquote { font-style: italic; font-weight: 400; font-size: 1.45em; line-height: 1.3; font-variation-settings: "opsz" 48; padding-left: 1.2em; margin: 1.8em 0; quotes: none; }
+.prose blockquote p::before, .prose blockquote p::after { content: none; }
+.prose figure { margin: 2em 0; }
+.prose figure img, .prose > img { width: 100%; height: auto; border-radius: 0; }
+.prose figcaption, .prose img + em { font-family: var(--font-sans); font-style: normal; font-size: 0.8125rem; line-height: 1.5; color: var(--color-muted); display: block; margin-top: 0.6em; }
+.prose code { font-size: 0.9em; font-weight: 400; background: #f1ece8; padding: 0.1em 0.3em; border-radius: 3px; }
+.prose code::before, .prose code::after { content: none; }
+.prose pre { background: #f3eeea; color: var(--color-ink); border: 1px solid var(--color-rule); border-radius: 4px; }
+.prose details { border-top: 1px solid var(--color-rule); border-bottom: 1px solid var(--color-rule); padding: 0.75em 0; margin: 1.5em 0; }
+.prose summary { cursor: pointer; font-family: var(--font-sans); font-size: 0.9rem; font-weight: 500; }
+.prose table { font-family: var(--font-sans); font-size: 0.9rem; }
+.prose .footnotes { font-size: 0.9em; border-top: 1px solid var(--color-rule); margin-top: 3em; padding-top: 1em; }
+
+@media print {
+  nav, footer, .no-print { display: none !important; }
+  body { background: #fff; color: #000; }
+  .prose { max-width: none; font-size: 11pt; }
+  figure, img, blockquote { break-inside: avoid; }
+  h2, h3 { break-after: avoid; }
+  a { text-decoration: none; color: inherit; }
+  .prose a[href^="http"]::after { content: " (" attr(href) ")"; font-size: 0.85em; color: #555; }
+}

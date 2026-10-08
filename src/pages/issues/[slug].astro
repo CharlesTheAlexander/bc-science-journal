@@ -1,0 +1,48 @@
+---
+import { Image } from 'astro:assets';
+import { getEntries, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import ArticleRow from '../../components/ArticleRow.astro';
+import { allIssues, fmtDate, publishedArticles, sectionsInOrder, base } from '../../lib';
+
+export async function getStaticPaths() {
+  // Every issue builds, including unpublished ones, so editors can review on staging.
+  return (await allIssues()).map((issue) => ({ params: { slug: issue.id }, props: { issue } }));
+}
+const { issue } = Astro.props;
+const { Content } = await render(issue);
+const live = issue.data.publishDate <= new Date();
+const articles = (await publishedArticles()).filter((a) => a.data.issue.id === issue.id);
+const featured = await getEntries(issue.data.featuredArticles);
+const featuredIds = new Set(featured.map((f) => f.id));
+const bySection = (await sectionsInOrder())
+  .map((s) => ({ name: s.data.name, id: s.id, articles: articles.filter((a) => a.data.section.id === s.id && !featuredIds.has(a.id)) }))
+  .filter((s) => s.articles.length > 0);
+---
+<Base title={`${issue.data.title}, ${issue.data.season}`} description={`Table of contents and editor’s note for ${issue.data.title} of The Berkeley Carroll Science Journal.`} image={`${base}/og/issues/${issue.id}.png`} noindex={!live}>
+  <header class="grid gap-8 lg:grid-cols-[1fr_1fr] lg:gap-14 items-start">
+    <Image src={issue.data.coverImage} alt={`${issue.data.title} cover`} width={1200} height={675} class="w-full aspect-[16/9] object-cover" loading="eager" />
+    <div>
+      <p class="meta">{issue.data.season}, {fmtDate(issue.data.publishDate)}{!live && ', not yet published'}</p>
+      <h1 class="display mt-2 text-t2">{issue.data.title}</h1>
+      {issue.data.pdfUrl && <p class="mt-4 font-sans text-sm"><a class="link-ink" href={issue.data.pdfUrl}>Download the print edition (PDF)</a></p>}
+    </div>
+  </header>
+
+  <section class="mt-12 lg:grid lg:grid-cols-[13rem_1fr] lg:gap-14">
+    <h2 class="meta text-ink font-medium mb-3 lg:mb-0 lg:border-t lg:border-accent lg:pt-3">Editor’s note</h2>
+    <div class="prose"><Content /></div>
+  </section>
+
+  <section class="mt-14" aria-labelledby="toc">
+    <h2 id="toc" class="display text-t3 mb-4">In this issue</h2>
+    {featured.map((a) => <ArticleRow article={a} large />)}
+    {bySection.map((s) => (
+      <div class="mt-10">
+        <h3 class="meta text-ink font-medium mb-1"><a class="link-ink" href={`${base}/sections/${s.id}`}>{s.name}</a></h3>
+        {s.articles.map((a) => <ArticleRow article={a} showSection={false} />)}
+      </div>
+    ))}
+    {articles.length === 0 && <p class="text-muted">No articles in this issue yet.</p>}
+  </section>
+</Base>

@@ -1,0 +1,29 @@
+---
+import { base } from '../lib';
+import Base from '../layouts/Base.astro';
+import SectionHead from '../components/SectionHead.astro';
+---
+<Base title="About" description="What The Berkeley Carroll Science Journal is, who runs it, and how to get involved.">
+  <SectionHead title="About the journal" />
+  <div class="prose">
+    <p>The Berkeley Carroll Science Journal is a student-run magazine of science, math, computing, medicine, and the questions around them. It launched in the 2026 to 2027 school year and publishes its first issue in January 2027.</p>
+    <p>Berkeley Carroll has long had places for student writing. <em>The Blotter</em> publishes fiction, essays, and poetry. <em>Reflections</em> collects student work each year. The Science Journal does the same thing for STEM: it gives students a platform for research they’ve done, programs they’ve attended, ideas they want to explain, and opinions on the science in the news.</p>
+    <h2>What we publish</h2>
+    <ul>
+      <li>Research write-ups: a student’s own project, from a science fair, a summer lab, or an independent study.</li>
+      <li>Program and experience pieces: what a summer program, internship, or competition was actually like.</li>
+      <li>Explainers: a topic the writer cares about, explained for a smart non-specialist.</li>
+      <li>Current events: a recent science story and what the writer makes of it.</li>
+      <li>The Alumni Column: interviews with Berkeley Carroll graduates working in STEM.</li>
+      <li>Problems and Puzzles, and Course Previews written by students who took the class.</li>
+    </ul>
+    <h2>How pieces are edited</h2>
+    <p>Every piece goes through at least one edit round with a student editor, usually two, then a copyedit. The faculty advisor reads every article before publication for accuracy and appropriateness. That read is what lets the journal call itself edited. Editing happens in shared documents; the site only shows finished work.</p>
+    <h2>Who runs it</h2>
+    <p>The journal was founded by students in 2026 and is advised by a member of the science faculty. The current staff is on the <a href={`${base}/masthead`}>masthead</a>. Every writer and editor has an <a href={`${base}/authors/charles`}>author page</a> that lists their published and edited work at a stable address.</p>
+    <h2>Get involved</h2>
+    <p>Anyone at Berkeley Carroll can write, edit, or work on design and the site. Read the <a href={`${base}/submit`}>submission guidelines</a> and fill out the form, or email <a href="mailto:sciencejournal@berkeleycarroll.org">sciencejournal@berkeleycarroll.org</a>.</p>
+    <h2>Corrections</h2>
+    <p>If something we published is wrong, tell us. Corrections are made on the article with a dated note at the bottom.</p>
+  </div>
+</Base>

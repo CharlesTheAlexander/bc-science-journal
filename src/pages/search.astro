@@ -1,0 +1,30 @@
+---
+import { base } from '../lib';
+import Base from '../layouts/Base.astro';
+import SectionHead from '../components/SectionHead.astro';
+---
+<Base title="Search" description="Search every article in The Berkeley Carroll Science Journal." noindex>
+  <SectionHead title="Search" />
+  <link rel="stylesheet" href={`${base}/pagefind/pagefind-ui.css`} />
+  <div id="search" class="max-w-3xl font-sans"></div>
+  <noscript><p class="text-muted">Search needs JavaScript. Browse by <a class="link-ink" href={`${base}/issues`}>issue</a> instead.</p></noscript>
+  <script is:inline src={`${base}/pagefind/pagefind-ui.js`}></script>
+  <script is:inline>
+    window.addEventListener('DOMContentLoaded', () => {
+      if (window.PagefindUI) new window.PagefindUI({ element: '#search', showSubResults: false, showImages: false });
+      else document.getElementById('search').textContent = 'Search index is built with the site. Run `npm run build` and `npm run preview` to use it locally.';
+    });
+  </script>
+  <style is:global>
+    #search { --pagefind-ui-primary: var(--color-accent); --pagefind-ui-text: var(--color-ink); --pagefind-ui-background: var(--color-paper); --pagefind-ui-border: var(--color-rule); --pagefind-ui-font: var(--font-public); --pagefind-ui-border-radius: 4px; }
+    .pagefind-ui__result-title, .pagefind-ui__result-link { font-family: var(--font-newsreader); font-size: 1.35rem; font-weight: 500; }
+    .pagefind-ui__result-excerpt mark { background: var(--color-accent-soft); color: inherit; }
+    .pagefind-ui__message { font-weight: 500; }
+    .pagefind-ui__search-input { border-width: 1px; box-shadow: none; }
+    .pagefind-ui__search-input:focus { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+    .pagefind-ui__result { border-top: 1px solid var(--color-rule); padding: 1.25rem 0; }
+    .pagefind-ui__result-excerpt { color: var(--color-muted); }
+    .pagefind-ui__button { border: 1px solid var(--color-rule); background: transparent; font-family: var(--font-public); }
+    .pagefind-ui__search-input { font-weight: 400; }
+  </style>
+</Base>

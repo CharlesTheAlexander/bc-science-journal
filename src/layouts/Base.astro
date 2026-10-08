@@ -1,0 +1,110 @@
+---
+import { Font } from 'astro:assets';
+import '../styles/global.css';
+import { visibleSections, base } from '../lib';
+
+interface Props {
+  title: string;
+  description: string;
+  image?: string;
+  type?: 'website' | 'article';
+  publishedTime?: Date;
+  authors?: string[];
+  noindex?: boolean;
+}
+const SITE_NAME = 'The Berkeley Carroll Science Journal';
+const { title, description, image, type = 'website', publishedTime, authors = [], noindex = false } = Astro.props;
+const fullTitle = title === SITE_NAME ? title : `${title} | ${SITE_NAME}`;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const ogImage = image ? new URL(image, Astro.site).href : new URL(`${base}/og-default.png`, Astro.site).href;
+const sections = await visibleSections();
+const nav = [
+  { href: '/issues', label: 'Issues' },
+  ...sections.map((s) => ({ href: `${base}/sections/${s.id}`, label: s.data.name })),
+  { href: '/masthead', label: 'Masthead' },
+  { href: '/about', label: 'About' },
+  { href: '/submit', label: 'Submit' },
+];
+const here = Astro.url.pathname;
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href={`${base}/favicon.svg`} type="image/svg+xml" />
+    <link rel="icon" href={`${base}/favicon-32.png`} sizes="32x32" type="image/png" />
+    <link rel="apple-touch-icon" href={`${base}/apple-touch-icon.png`} />
+    <link rel="alternate" type="application/rss+xml" title={SITE_NAME} href={`${base}/rss.xml`} />
+    <link rel="sitemap" href={`${base}/sitemap-index.xml`} />
+    {noindex && <meta name="robots" content="noindex" />}
+    <meta property="og:site_name" content={SITE_NAME} />
+    <meta property="og:type" content={type} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:alt" content={title} />
+    <meta name="twitter:card" content="summary_large_image" />
+    {publishedTime && <meta property="article:published_time" content={publishedTime.toISOString()} />}
+    {authors.map((a) => <meta property="article:author" content={a} />)}
+    <Font cssVariable="--font-newsreader" preload />
+    <Font cssVariable="--font-public" />
+  </head>
+  <body class="min-h-screen flex flex-col">
+    <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:bg-paper focus:px-3 focus:py-2 focus:font-sans focus:text-sm">Skip to content</a>
+    <header class="border-b border-rule">
+      <div class="mx-auto max-w-6xl px-4 sm:px-6">
+        <div class="flex items-baseline justify-between gap-6 py-5 sm:py-7">
+          <a href={`${base}/`} class="display text-[1.35rem] sm:text-[1.75rem] leading-none no-underline">
+            The Berkeley Carroll<br class="sm:hidden" /> Science Journal
+          </a>
+          <a href={`${base}/search`} class="font-sans text-sm text-muted link-ink shrink-0 no-print" aria-label="Search the journal">Search</a>
+        </div>
+        <nav aria-label="Primary" class="-mx-4 sm:mx-0 overflow-x-auto [mask-image:linear-gradient(to_right,black_calc(100%-2.5rem),transparent)] sm:[mask-image:none]">
+          <ul class="flex gap-5 pl-4 pr-12 sm:px-0 pb-3 font-sans text-[0.9375rem] whitespace-nowrap">
+            {nav.map((n) => (
+              <li>
+                <a
+                  href={n.href}
+                  aria-current={here === n.href || here.startsWith(n.href + '/') ? 'page' : undefined}
+                  class="link-ink aria-[current=page]:text-accent aria-[current=page]:decoration-accent"
+                >{n.label}</a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main" class="flex-1 mx-auto w-full max-w-6xl px-4 sm:px-6 py-8 sm:py-12">
+      <slot />
+    </main>
+
+    <footer class="border-t border-rule mt-16">
+      <div class="mx-auto max-w-6xl px-4 sm:px-6 py-10 grid gap-8 sm:grid-cols-3 font-sans text-sm text-muted">
+        <div>
+          <p class="text-ink font-serif text-lg">The Berkeley Carroll Science Journal</p>
+          <p class="mt-1">A student-run magazine of science, math, computing, and medicine at the Berkeley Carroll School, Brooklyn.</p>
+        </div>
+        <ul class="space-y-1">
+          <li><a class="link-ink" href={`${base}/issues`}>Issues</a></li>
+          <li><a class="link-ink" href={`${base}/masthead`}>Masthead</a></li>
+          <li><a class="link-ink" href={`${base}/about`}>About</a></li>
+          <li><a class="link-ink" href={`${base}/about#corrections`}>Corrections</a></li>
+          <li><a class="link-ink" href={`${base}/submit`}>Write for the journal</a></li>
+          <li><a class="link-ink" href={`${base}/search`}>Search</a></li>
+          <li><a class="link-ink" href={`${base}/rss.xml`}>RSS feed</a></li>
+        </ul>
+        <div class="space-y-1">
+          <p>Contact: <a class="link-ink" href="mailto:sciencejournal@berkeleycarroll.org">sciencejournal@berkeleycarroll.org</a></p>
+          <p>Writers keep copyright of their work. The journal holds the right to publish online and in print.</p>
+          <p>Founded 2026.</p>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

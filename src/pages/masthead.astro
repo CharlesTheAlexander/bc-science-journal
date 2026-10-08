@@ -1,0 +1,37 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import SectionHead from '../components/SectionHead.astro';
+import { ROLE_ORDER, publishedArticles, base } from '../lib';
+
+const people = await getCollection('authors', (a) => a.data.role !== 'Alumni');
+const articles = await publishedArticles();
+const hasPublished = (id: string) => articles.some((a) => a.data.authors.some((r) => r.id === id));
+const groups = ROLE_ORDER.map((role) => ({
+  role: role === 'Staff Writer' ? 'Contributors' : role,
+  people: people
+    .filter((p) => p.data.role === role && (role !== 'Staff Writer' || hasPublished(p.id)))
+    .sort((a, b) => a.data.name.localeCompare(b.data.name)),
+})).filter((g) => g.people.length > 0);
+---
+<Base title="Masthead" description="The staff and faculty advisor of The Berkeley Carroll Science Journal.">
+  <SectionHead title="Masthead" sub="2026 to 2027 school year" />
+  <dl class="border-t border-rule max-w-4xl">
+    {groups.map((g) => (
+      <div class="grid grid-cols-1 sm:grid-cols-[11rem_1fr] gap-x-8 gap-y-1 py-5 border-b border-rule">
+        <dt class="meta pt-1">{g.role}</dt>
+        <dd>
+          <ul class="space-y-1">
+            {g.people.map((p) => (
+              <li class="text-lg leading-snug">
+                <a class="link-ink" href={`${base}/authors/${p.id}`}>{p.data.name}</a>
+                {p.data.gradYear && <span class="meta inline ml-2">’{String(p.data.gradYear).slice(2)}</span>}
+              </li>
+            ))}
+          </ul>
+        </dd>
+      </div>
+    ))}
+  </dl>
+  <p class="mt-8 max-w-[60ch] text-muted">Contributors are listed once their first piece is published. Two published pieces earn the Associate Editor title.</p>
+</Base>

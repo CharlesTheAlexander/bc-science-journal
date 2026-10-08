@@ -1,0 +1,19 @@
+---
+import Base from '../../layouts/Base.astro';
+import SectionHead from '../../components/SectionHead.astro';
+import ArticleRow from '../../components/ArticleRow.astro';
+import { publishedArticles, sectionsInOrder, base } from '../../lib';
+
+export async function getStaticPaths() {
+  // Every section has a page; only sections with 2+ articles appear in navigation.
+  return (await sectionsInOrder()).map((section) => ({ params: { slug: section.id }, props: { section } }));
+}
+const { section } = Astro.props;
+const articles = (await publishedArticles()).filter((a) => a.data.section.id === section.id);
+---
+<Base title={section.data.name} description={section.data.description} noindex={articles.length === 0}>
+  <SectionHead title={section.data.name} sub={section.data.description} />
+  {articles.length === 0 ? (
+    <p class="text-xl max-w-[50ch]">Nothing here yet. <a class="link-ink" href={`${base}/submit`}>Pitch the first piece.</a></p>
+  ) : articles.map((a) => <ArticleRow article={a} showSection={false} showDate />)}
+</Base>

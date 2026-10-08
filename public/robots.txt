@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://charlesthealexander.github.io/bc-science-journal/sitemap-index.xml

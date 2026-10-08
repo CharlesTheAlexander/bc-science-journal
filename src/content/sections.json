@@ -1,0 +1,13 @@
+[
+  { "id": "biology-and-medicine", "name": "Biology and Medicine", "description": "Living systems, from molecules to medicine.", "order": 1 },
+  { "id": "chemistry", "name": "Chemistry", "description": "Matter, reactions, and materials.", "order": 2 },
+  { "id": "physics-and-astronomy", "name": "Physics and Astronomy", "description": "Forces, fields, and the universe.", "order": 3 },
+  { "id": "math", "name": "Math", "description": "Proofs, problems, and patterns.", "order": 4 },
+  { "id": "computer-science-and-ai", "name": "Computer Science and AI", "description": "Computation, software, and machine learning.", "order": 5 },
+  { "id": "environment-and-earth-science", "name": "Environment and Earth Science", "description": "Climate, ecology, and the planet.", "order": 6 },
+  { "id": "science-and-society", "name": "Science and Society", "description": "Ethics, policy, and how science meets the world.", "order": 7 },
+  { "id": "innovation", "name": "Innovation", "description": "Student projects, startups, and engineering.", "order": 8 },
+  { "id": "alumni-column", "name": "Alumni Column", "description": "Conversations with Berkeley Carroll alumni in STEM.", "order": 9 },
+  { "id": "problems-and-puzzles", "name": "Problems and Puzzles", "description": "Problem sets and competition questions with answer keys.", "order": 10 },
+  { "id": "course-previews", "name": "Course Previews", "description": "What next year's science courses are really like.", "order": 11 }
+]

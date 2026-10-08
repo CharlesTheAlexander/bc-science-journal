@@ -1,0 +1,134 @@
+---
+import { Image } from 'astro:assets';
+import { getEntries, getEntry, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import ArticleRow from '../../components/ArticleRow.astro';
+import { fmtDate, issueOrder, publishedArticles, readingTime, base } from '../../lib';
+
+export async function getStaticPaths() {
+  return (await publishedArticles()).map((article) => ({ params: { slug: article.id }, props: { article } }));
+}
+const { article } = Astro.props;
+const { Content } = await render(article);
+const authors = await getEntries(article.data.authors);
+const editors = await getEntries(article.data.editors);
+const section = await getEntry(article.data.section);
+const issue = await getEntry(article.data.issue);
+const minutes = readingTime(article.body);
+
+const others = (await publishedArticles()).filter((a) => a.id !== article.id);
+const related = [
+  ...others.filter((a) => a.data.section.id === article.data.section.id),
+  ...others.filter((a) => a.data.section.id !== article.data.section.id),
+].slice(0, 3);
+const sep = (i: number, n: number) => (i === 0 ? '' : i === n - 1 ? ' and ' : ', ');
+const url = new URL(`${base}/articles/${article.id}`, Astro.site).href;
+const order = issue ? await issueOrder(issue.id, issue.data.featuredArticles) : [];
+const at = order.findIndex((a) => a.id === article.id);
+const prev = at > 0 ? order[at - 1] : undefined;
+const next = at >= 0 && at < order.length - 1 ? order[at + 1] : undefined;
+const ogImage = `${base}/og/articles/${article.id}.png`;
+const citation = `${authors.map((a) => a.data.name).join(', ')}. "${article.data.title}." The Berkeley Carroll Science Journal, ${issue?.data.title}, ${fmtDate(article.data.publishDate)}. ${url}`;
+const jsonLd = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: article.data.title,
+  description: article.data.abstract,
+  datePublished: article.data.publishDate.toISOString(),
+  dateModified: (article.data.corrections.at(-1)?.date ?? article.data.publishDate).toISOString(),
+  author: authors.map((a) => ({ '@type': 'Person', name: a.data.name, url: new URL(`${base}/authors/${a.id}`, Astro.site).href })),
+  editor: editors.map((e) => ({ '@type': 'Person', name: e.data.name })),
+  publisher: { '@type': 'Organization', name: 'The Berkeley Carroll Science Journal', url: Astro.site?.href },
+  image: new URL(ogImage, Astro.site).href,
+  articleSection: section?.data.name,
+  keywords: article.data.tags.join(', '),
+  mainEntityOfPage: url,
+});
+---
+<Base
+  title={article.data.title}
+  description={article.data.abstract}
+  image={ogImage}
+  type="article"
+  publishedTime={article.data.publishDate}
+  authors={authors.map((a) => a.data.name)}
+>
+  <script is:inline type="application/ld+json" set:html={jsonLd} />
+  <article data-pagefind-body>
+    <header class="max-w-4xl">
+      <p class="meta">
+        <a class="link-ink" href={`${base}/sections/${section?.id}`}>{section?.data.name}</a>
+        {issue && <span>, <a class="link-ink" href={`${base}/issues/${issue.id}`}>{issue.data.title}, {issue.data.season}</a></span>}
+      </p>
+      <h1 class="display mt-3 text-t1">{article.data.title}</h1>
+      {article.data.subtitle && <p class="mt-4 max-w-[52ch] text-lede text-muted">{article.data.subtitle}</p>}
+    </header>
+
+    <figure class="mt-8 sm:mt-10 -mx-4 sm:mx-0">
+      <Image src={article.data.coverImage} alt="" widths={[640, 960, 1280, 1600]} sizes="(min-width: 72rem) 72rem, 100vw" class="w-full aspect-[16/9] max-h-[32rem] object-cover" loading="eager" fetchpriority="high" />
+      <figcaption class="meta px-4 sm:px-0 mt-2">{article.data.coverCredit}</figcaption>
+    </figure>
+
+    <div class="mt-8 sm:mt-10 grid gap-8 lg:grid-cols-[13rem_1fr] lg:gap-14">
+      <aside class="font-sans text-sm lg:sticky lg:top-8 lg:self-start border-t border-accent pt-3">
+        <p class="text-ink">By {authors.map((a, i) => (
+          <>{sep(i, authors.length)}<a class="link-ink" href={`${base}/authors/${a.id}`}>{a.data.name}</a>{a.data.gradYear && `, Class of ${a.data.gradYear}`}</>
+        ))}</p>
+        <p class="text-muted mt-1">{fmtDate(article.data.publishDate)}</p>
+        <p class="text-muted">{minutes} minute read</p>
+        {editors.length > 0 && (
+          <p class="text-muted mt-3">Edited by {editors.map((e, i) => (
+            <>{sep(i, editors.length)}<a class="link-ink" href={`${base}/authors/${e.id}`}>{e.data.name}</a></>
+          ))}</p>
+        )}
+        {article.data.tags.length > 0 && <p class="text-muted mt-3 hidden lg:block">{article.data.tags.join(', ')}</p>}
+      </aside>
+
+      <div class="min-w-0">
+        <p class="text-lede max-w-[58ch]">{article.data.abstract}</p>
+        <div class="prose mt-8">
+          <Content />
+        </div>
+
+        {article.data.corrections.length > 0 && (
+          <section class="mt-12 max-w-[66ch]" aria-labelledby="corrections">
+            <h2 id="corrections" class="font-sans text-sm font-medium border-t border-rule pt-3">Corrections</h2>
+            <ul class="mt-3 font-sans text-sm text-muted space-y-1.5">
+              {article.data.corrections.map((c) => <li>{fmtDate(c.date)}: {c.note}</li>)}
+            </ul>
+          </section>
+        )}
+
+        {article.data.sources.length > 0 && (
+          <section class="mt-12 max-w-[66ch]" aria-labelledby="sources">
+            <h2 id="sources" class="font-sans text-sm font-medium border-t border-rule pt-3">Sources</h2>
+            <ol class="mt-3 font-sans text-sm text-muted list-decimal pl-5 space-y-1.5">
+              {article.data.sources.map((s) => (
+                <li><a class="link-ink break-words" href={s.url} rel="noopener">{s.label}</a></li>
+              ))}
+            </ol>
+          </section>
+        )}
+
+        {(prev || next) && (
+          <nav class="mt-12 max-w-[66ch] grid gap-4 sm:grid-cols-2 border-t border-rule pt-4 font-sans text-sm no-print" aria-label="Within this issue">
+            <div>{prev && <><p class="text-muted">Previous in {issue?.data.title}</p><a class="link-ink font-serif text-lg leading-snug" href={`${base}/articles/${prev.id}`}>{prev.data.title}</a></>}</div>
+            <div class="sm:text-right">{next && <><p class="text-muted">Next in {issue?.data.title}</p><a class="link-ink font-serif text-lg leading-snug" href={`${base}/articles/${next.id}`}>{next.data.title}</a></>}</div>
+          </nav>
+        )}
+
+        <section class="mt-12 max-w-[66ch]" aria-labelledby="cite">
+          <h2 id="cite" class="font-sans text-sm font-medium border-t border-rule pt-3">Cite this article</h2>
+          <p class="mt-3 font-sans text-sm text-muted break-words">{citation}</p>
+        </section>
+      </div>
+    </div>
+  </article>
+
+  {related.length > 0 && (
+    <section class="mt-16 lg:ml-[16.5rem] no-print" aria-labelledby="related">
+      <h2 id="related" class="meta text-ink font-medium mb-1">More from the journal</h2>
+      {related.map((a) => <ArticleRow article={a} />)}
+    </section>
+  )}
+</Base>
